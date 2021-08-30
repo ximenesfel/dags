@@ -4,6 +4,7 @@ from airflow import DAG
 from airflow.operators.bash_operator import BashOperator
 # We then import the days_ago function
 from airflow.utils.dates import days_ago
+from datetime import timedelta
 
 # initializing the default arguments that we'll pass to our DAG
 default_args = {
