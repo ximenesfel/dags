@@ -1,79 +1,50 @@
 from datetime import timedelta
-from textwrap import dedent
-
-# The DAG object; we'll need this to instantiate a DAG
 from airflow import DAG
-
-# Operators; we need this to operate!
-from airflow.operators.bash import BashOperator
-from airflow.providers.cncf.kubernetes.backcompat.volume_mount import VolumeMount
-from airflow.providers.cncf.kubernetes.backcompat.volume import Volume
+from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
+from airflow.operators.dummy_operator import DummyOperator
 from airflow.utils.dates import days_ago
 
-from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
-import os
-# These args will get passed on to each operator
-# You can override them on a per-task basis during operator initialization
-
 default_args = {
-    'owner': 'airflow',
+    'owner': 'Airflow',
     'depends_on_past': False,
+    'start_date': days_ago(0),
+    'catchup': False,
     'email': ['airflow@example.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    'retries': 1,
+    'retries': 0,
     'retry_delay': timedelta(minutes=5),
-    # 'queue': 'bash_queue',
-    # 'pool': 'backfill',
-    # 'priority_weight': 10,
-    # 'end_date': datetime(2016, 1, 1),
-    # 'wait_for_downstream': False,
-    # 'dag': dag,
-    # 'sla': timedelta(hours=2),
-    # 'execution_timeout': timedelta(seconds=300),
-    # 'on_failure_callback': some_function,
-    # 'on_success_callback': some_other_function,
-    # 'on_retry_callback': another_function,
-    # 'sla_miss_callback': yet_another_function,
-    # 'trigger_rule': 'all_success'
 }
-with DAG(
-    'python_kubernetes_workflow',
+
+dag = DAG(
+    'dag_that_executes_via_KubernetesPodOperator',
     default_args=default_args,
-    description='python_kubernetes_workflow',
-    schedule_interval=timedelta(days=1),
-    start_date=days_ago(2),
-    tags=['python_kubernetes_workflow'],
-) as dag:
+    schedule_interval=timedelta(minutes=30),
+    max_active_runs=1,
+    concurrency=10
+)
 
+# Generate 2 tasks
+tasks = ["task{}".format(i) for i in range(1, 3)]
+example_dag_complete_node = DummyOperator(task_id="example_dag_complete", dag=dag)
 
-    t1 = KubernetesPodOperator(
+org_dags = []
+for task in tasks:
+
+    bash_command = 'echo HELLO'
+
+    org_node = KubernetesPodOperator(
         namespace='default',
-        image='python:3.7',
-        image_pull_policy = 'Never',
-        cmds=["python","-c", "print('hello task 1 ..................')"],
+        image="python",
+        cmds=["python", "-c"],
+        arguments=["print('HELLO')"],
         labels={"foo": "bar"},
-        name="task-1",
-        is_delete_operator_pod=True,
-        in_cluster=False,
-        task_id="task-1",
-        config_file=os.path.expanduser('~')+"/.kube/config",
-        get_logs=True
+        image_pull_policy="Always",
+        name=task,
+        task_id=task,
+        is_delete_operator_pod=False,
+        get_logs=True,
+        dag=dag
     )
 
-    t2 = KubernetesPodOperator(
-        namespace='default',
-        image='python:3.7',
-        image_pull_policy='Never',
-        cmds=["python", "-c", "print('hello task 2 ..................')"],
-        labels={"foo": "bar"},
-        name="task-2",
-        is_delete_operator_pod=True,
-        in_cluster=False,
-        task_id="task-2",
-        config_file=os.path.expanduser('~')+"/.kube/config",
-        get_logs=True
-    )
-
-
-    t1 >> t2
+    org_node.set_downstream(example_dag_complete_node)
