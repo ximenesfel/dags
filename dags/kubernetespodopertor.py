@@ -103,41 +103,41 @@ with DAG(
     start_date=days_ago(2),
     tags=['example'],
 ) as dag:
-    k = KubernetesPodOperator(
-        namespace='default',
-        image="ubuntu:16.04",
-        cmds=["bash", "-cx"],
-        arguments=["echo", "10"],
-        labels={"foo": "bar"},
-        secrets=[secret_file, secret_env, secret_all_keys],
-        ports=[port],
-        volumes=[volume],
-        volume_mounts=[volume_mount],
-        env_from=configmaps,
-        name="airflow-test-pod",
-        task_id="task",
-        affinity=affinity,
-        is_delete_operator_pod=True,
-        hostnetwork=False,
-        tolerations=tolerations,
-        init_containers=[init_container],
-        priority_class_name="medium",
-    )
+    # k = KubernetesPodOperator(
+    #     namespace='default',
+    #     image="ubuntu:16.04",
+    #     cmds=["bash", "-cx"],
+    #     arguments=["echo", "10"],
+    #     labels={"foo": "bar"},
+    #     secrets=[secret_file, secret_env, secret_all_keys],
+    #     ports=[port],
+    #     volumes=[volume],
+    #     volume_mounts=[volume_mount],
+    #     env_from=configmaps,
+    #     name="airflow-test-pod",
+    #     task_id="task",
+    #     affinity=affinity,
+    #     is_delete_operator_pod=True,
+    #     hostnetwork=False,
+    #     tolerations=tolerations,
+    #     init_containers=[init_container],
+    #     priority_class_name="medium",
+    # )
 
     # [START howto_operator_k8s_private_image]
-    quay_k8s = KubernetesPodOperator(
-        namespace='default',
-        image='quay.io/apache/bash',
-        image_pull_secrets=[k8s.V1LocalObjectReference('testquay')],
-        cmds=["bash", "-cx"],
-        arguments=["echo", "10", "echo pwd"],
-        labels={"foo": "bar"},
-        name="airflow-private-image-pod",
-        is_delete_operator_pod=True,
-        in_cluster=True,
-        task_id="task-two",
-        get_logs=True,
-    )
+    # quay_k8s = KubernetesPodOperator(
+    #     namespace='default',
+    #     image='quay.io/apache/bash',
+    #     image_pull_secrets=[k8s.V1LocalObjectReference('testquay')],
+    #     cmds=["bash", "-cx"],
+    #     arguments=["echo", "10", "echo pwd"],
+    #     labels={"foo": "bar"},
+    #     name="airflow-private-image-pod",
+    #     is_delete_operator_pod=True,
+    #     in_cluster=True,
+    #     task_id="task-two",
+    #     get_logs=True,
+    # )
     # [END howto_operator_k8s_private_image]
 
     # [START howto_operator_k8s_write_xcom]
