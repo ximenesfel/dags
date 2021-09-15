@@ -24,6 +24,7 @@ my_first_dag = DAG(
 task_1 = KubernetesPodOperator(
     task_id='kubernetes',
     pod_template_file='./pod/multicontainer-pod.yaml',
+    dag=my_first_dag,
 )
 
 task_2 = BashOperator(
