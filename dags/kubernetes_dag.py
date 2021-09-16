@@ -37,7 +37,7 @@ for task in tasks:
     org_node = KubernetesPodOperator(
         namespace='airflow',
         image="tensorflow/tensorflow:2.4.2",
-        cmds=["tensorboard"],
+        cmds=["tensorboard", "--help"],
         image_pull_policy="Always",
         name=task,
         in_cluster=True,
