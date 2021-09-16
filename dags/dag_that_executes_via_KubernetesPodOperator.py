@@ -41,6 +41,7 @@ for task in tasks:
         labels={"foo": "bar"},
         image_pull_policy="Always",
         name=task,
+        in_cluster=True,
         task_id=task,
         is_delete_operator_pod=False,
         get_logs=True,
