@@ -3,6 +3,7 @@ from airflow import DAG
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.utils.dates import days_ago
+from kubernetes.client import models as k8s
 
 default_args = {
     'owner': 'Airflow',
