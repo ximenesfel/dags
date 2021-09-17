@@ -43,18 +43,20 @@ volume = k8s.V1Volume(
     persistent_volume_claim=k8s.V1PersistentVolumeClaimVolumeSource(claim_name='tensorboard-claim'),
 )
 
-# tensorboard = KubernetesPodOperator(
-#     namespace='airflow',
-#     image="ximenesfel/mnist_training:latest",
-#     cmds=["python", "/root/code/fashion_mnist.py"],
-#     name="training",
-#     in_cluster=True,
-#     task_id="training",
-#     is_delete_operator_pod=True,
-#     startup_timeout_seconds=300,
-#     get_logs=True,
-#     dag=dag
-# )
+tensorboard = KubernetesPodOperator(
+    namespace='airflow',
+    image="ximenesfel/mnist_tensorboard:latest",
+    cmds=["tensorboard",  "--logdir",  "/root/tensorboard", "--bind_all"],
+    name="training",
+    in_cluster=True,
+    task_id="tensorboard",
+    volumes=[volume],
+    volume_mounts=[volume_mount],
+    is_delete_operator_pod=True,
+    startup_timeout_seconds=300,
+    get_logs=True,
+    dag=dag
+)
 
 training = KubernetesPodOperator(
     namespace='airflow',
@@ -71,4 +73,4 @@ training = KubernetesPodOperator(
     dag=dag
 )
 
-training
+tensorboard >> training
