@@ -36,8 +36,7 @@ dag = DAG(
 #     bash_command = 'echo HELLO'
 
 volume_mount = k8s.V1VolumeMount(
-    name='tensorboard', mount_path='/root/tensorboard', sub_path=None, read_only=True
-)
+    name='tensorboard', mount_path='/root/tensorboard', sub_path=None)
 
 volume = k8s.V1Volume(
     name='tensorboard',
