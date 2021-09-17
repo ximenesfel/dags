@@ -76,4 +76,4 @@ training = KubernetesPodOperator(
     dag=dag
 )
 
-tensorboard >> training
+[tensorboard, training]
