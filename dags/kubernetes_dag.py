@@ -43,13 +43,13 @@ volume = k8s.V1Volume(
     persistent_volume_claim=k8s.V1PersistentVolumeClaimVolumeSource(claim_name='tensorboard-claim'),
 )
 
-ports = k8s.V1ContainerPort(container_port=6006)
+ports = k8s.V1ContainerPort(container_port=6006, host_port=6006)
 
 tensorboard = KubernetesPodOperator(
     namespace='airflow',
     image="ximenesfel/mnist_tensorboard:latest",
     cmds=["tensorboard",  "--logdir",  "/root/tensorboard", "--bind_all"],
-    name="training",
+    name="tensorboard",
     in_cluster=True,
     task_id="tensorboard",
     volumes=[volume],
