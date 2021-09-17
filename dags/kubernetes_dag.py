@@ -34,6 +34,12 @@ dag = DAG(
 
 #     bash_command = 'echo HELLO'
 
+init_container = k8s.V1Container(
+    name="init-container",
+    image="tensorflow/tensorflow:2.4.2",
+    command=["tensorboard", "--help"],
+)
+
 org_node = KubernetesPodOperator(
     namespace='airflow',
     image="ximenesfel/mnist_training:latest",
@@ -43,6 +49,7 @@ org_node = KubernetesPodOperator(
     task_id="training",
     is_delete_operator_pod=True,
     startup_timeout_seconds=300,
+    init_containers=[init_container],
     get_logs=True,
     dag=dag
 )
