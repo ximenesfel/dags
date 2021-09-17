@@ -57,25 +57,23 @@ tensorboard = KubernetesPodOperator(
     is_delete_operator_pod=True,
     startup_timeout_seconds=300,
     ports=[ports],
-    service_account_name="tensorboard",
     get_logs=True,
     dag=dag
 )
 
-# training = KubernetesPodOperator(
-#     namespace='airflow',
-#     image="ximenesfel/mnist_training:latest",
-#     cmds=["python", "/root/code/fashion_mnist.py"],
-#     name="training",
-#     in_cluster=True,
-#     task_id="training",
-#     is_delete_operator_pod=True,
-#     volumes=[volume],
-#     volume_mounts=[volume_mount],
-#     startup_timeout_seconds=300,
-#     get_logs=True,
-#     dag=dag
-# )
+training = KubernetesPodOperator(
+    namespace='airflow',
+    image="ximenesfel/mnist_training:latest",
+    cmds=["python", "/root/code/fashion_mnist.py"],
+    name="training",
+    in_cluster=True,
+    task_id="training",
+    is_delete_operator_pod=True,
+    volumes=[volume],
+    volume_mounts=[volume_mount],
+    startup_timeout_seconds=300,
+    get_logs=True,
+    dag=dag
+)
 
-#tensorboard >> training
-tensorboard
+tensorboard >> training
