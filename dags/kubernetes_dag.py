@@ -42,6 +42,7 @@ org_node = KubernetesPodOperator(
     in_cluster=True,
     task_id="training",
     is_delete_operator_pod=True,
+    startup_timeout_seconds=300,
     get_logs=True,
     dag=dag
 )
