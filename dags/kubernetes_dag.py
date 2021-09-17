@@ -35,13 +35,29 @@ dag = DAG(
 
 #     bash_command = 'echo HELLO'
 
-init_container = k8s.V1Container(
-    name="init-container",
-    image="tensorflow/tensorflow:2.4.2",
-    command=["tensorboard", "--help"],
+volume_mount = k8s.V1VolumeMount(
+    name='test-volume', mount_path='/root/tensorboard', sub_path=None, read_only=True
 )
 
-org_node = KubernetesPodOperator(
+volume = k8s.V1Volume(
+    name='tensorboard',
+    persistent_volume_claim=k8s.V1PersistentVolumeClaimVolumeSource(claim_name='tensorboard'),
+)
+
+# tensorboard = KubernetesPodOperator(
+#     namespace='airflow',
+#     image="ximenesfel/mnist_training:latest",
+#     cmds=["python", "/root/code/fashion_mnist.py"],
+#     name="training",
+#     in_cluster=True,
+#     task_id="training",
+#     is_delete_operator_pod=True,
+#     startup_timeout_seconds=300,
+#     get_logs=True,
+#     dag=dag
+# )
+
+training = KubernetesPodOperator(
     namespace='airflow',
     image="ximenesfel/mnist_training:latest",
     cmds=["python", "/root/code/fashion_mnist.py"],
@@ -49,10 +65,11 @@ org_node = KubernetesPodOperator(
     in_cluster=True,
     task_id="training",
     is_delete_operator_pod=True,
+    volumes=[volume],
+    volume_mounts=[volume_mount],
     startup_timeout_seconds=300,
-    init_containers=[init_container],
     get_logs=True,
     dag=dag
 )
 
-org_node
+training
