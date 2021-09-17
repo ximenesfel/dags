@@ -36,12 +36,12 @@ dag = DAG(
 #     bash_command = 'echo HELLO'
 
 volume_mount = k8s.V1VolumeMount(
-    name='test-volume', mount_path='/root/tensorboard', sub_path=None, read_only=True
+    name='tensorboard', mount_path='/root/tensorboard', sub_path=None, read_only=True
 )
 
 volume = k8s.V1Volume(
     name='tensorboard',
-    persistent_volume_claim=k8s.V1PersistentVolumeClaimVolumeSource(claim_name='tensorboard'),
+    persistent_volume_claim=k8s.V1PersistentVolumeClaimVolumeSource(claim_name='tensorboard-claim'),
 )
 
 # tensorboard = KubernetesPodOperator(
