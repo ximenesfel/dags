@@ -36,7 +36,7 @@ dag = DAG(
 
 org_node = KubernetesPodOperator(
     namespace='airflow',
-    image="mnist_training:latest",
+    image="ximenesfel/mnist_training",
     cmds=["python", "/root/code/fashion_mnist.py"],
     name="training",
     in_cluster=True,
