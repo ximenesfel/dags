@@ -90,6 +90,7 @@ def sucess_tensorboard_task():
     dag_runs = DagRun.find(dag_id=dag_id)
     for dag_run in dag_runs:
         task = dag_run.get_task_instance("tensorboard")
+        print(task)
         print(f"Actual task state: {task.state}")
         task.state = State.SUCCESS
         print(f"Modified task state: {task.state}")
