@@ -45,6 +45,11 @@ volume = k8s.V1Volume(
 
 ports = k8s.V1ContainerPort(container_port=6006)
 
+start = BashOperator(
+    task_id='start',
+    bash_command='echo 1',
+)
+
 tensorboard = KubernetesPodOperator(
     namespace='airflow',
     image="ximenesfel/mnist_tensorboard:latest",
@@ -76,4 +81,9 @@ training = KubernetesPodOperator(
     dag=dag
 )
 
-[tensorboard, training]
+finish = BashOperator(
+    task_id='finish',
+    bash_command='echo 1',
+)
+
+start >> [tensorboard,training] >> finished
