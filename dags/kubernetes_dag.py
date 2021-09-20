@@ -89,7 +89,9 @@ def sucess_tensorboard_task():
     dag_id = 'tensorboard'
     dag_runs = DagRun.find(dag_id=dag_id)
     for dag_run in dag_runs:
+        print(f"Dag state: {dag_run.state}.")
         dag_run.state = State.SUCCESS
+        print(f"Modified dag state: {dag_run.state}.")
 
 finish = PythonOperator(
     task_id='finish',
