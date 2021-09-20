@@ -54,7 +54,7 @@ ports = k8s.V1ContainerPort(container_port=6006)
 
 # lifecycle = k8s.V1Lifecycle(pre_stop=handler)
 
-exec_action = k8s.V1ExecAction(command=["/bin/bash", "-c", "pgrep \"fashion_mnist\"])
+exec_action = k8s.V1ExecAction(command=["/bin/bash", "-c", "pgrep "/fashion_mnist/""])
 
 probe = k8s.V1Probe(_exec=exec_action)
 
