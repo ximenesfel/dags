@@ -46,6 +46,8 @@ volume = k8s.V1Volume(
     persistent_volume_claim=k8s.V1PersistentVolumeClaimVolumeSource(claim_name='tensorboard-claim'),
 )
 
+ports = k8s.V1ContainerPort(container_port=6006)
+
 exec_action = k8s.V1ExecAction(command=["pkill", "-2", "-f", "tensorboard"])
 
 handler = k8s.V1Handler(_exec=exec_action)
@@ -70,8 +72,6 @@ pod_spec = k8s.V1PodSpec(containers=[training, tensorboard],
                          share_process_namespace=True)
 
 pod = k8s.V1Pod(spec=pod_spec)
-
-ports = k8s.V1ContainerPort(container_port=6006)
 
 start = BashOperator(
     task_id='start',
