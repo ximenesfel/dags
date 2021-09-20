@@ -50,7 +50,7 @@ volume = k8s.V1Volume(
 
 #handler = k8s.V1Handler(_exec=)
 
-lifecycle = k8s.V1Lifecycle(pre_stop=handler)
+#lifecycle = k8s.V1Lifecycle(pre_stop=handler)
 
 training = k8s.V1Container(image="ximenesfel/mnist_training:latest", 
                            command=["python", "/root/code/fashion_mnist.py"], 
