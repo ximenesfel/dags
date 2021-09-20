@@ -46,7 +46,7 @@ volume = k8s.V1Volume(
     persistent_volume_claim=k8s.V1PersistentVolumeClaimVolumeSource(claim_name='tensorboard-claim'),
 )
 
-exec_action = k8s.V1ExecAction(command=["pkill", "-9", "-f", "my_pattern"])
+exec_action = k8s.V1ExecAction(command=["pkill", "-9", "-f", "tensorboard"])
 
 handler = k8s.V1Handler(_exec=exec_action)
 
