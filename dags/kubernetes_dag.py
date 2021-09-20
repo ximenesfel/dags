@@ -87,8 +87,9 @@ training = KubernetesPodOperator(
 
 def sucess_tensorboard_task():
     dag_id = 'tensorboard'
-    dag_run = DagRun.find(dag_id=dag_id)
-    dag_run.set_state = State.SUCCESS
+    dag_runs = DagRun.find(dag_id=dag_id)
+    for dag_run in dag_runs:
+        dag_run.state = State.SUCCESS
 
 finish = PythonOperator(
     task_id='finish',
