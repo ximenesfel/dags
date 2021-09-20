@@ -46,11 +46,11 @@ volume = k8s.V1Volume(
     persistent_volume_claim=k8s.V1PersistentVolumeClaimVolumeSource(claim_name='tensorboard-claim'),
 )
 
-# exec_action = k8s.V1ExecAction(command=["pkill", "-9", "-f", "tensorboard"])
+exec_action = k8s.V1ExecAction(command=["pkill", "-2", "-f", "tensorboard"])
 
-# handler = k8s.V1Handler(_exec=exec_action)
+handler = k8s.V1Handler(_exec=exec_action)
 
-# lifecycle = k8s.V1Lifecycle(pre_stop=handler)
+lifecycle = k8s.V1Lifecycle(pre_stop=handler)
 
 training = k8s.V1Container(image="ximenesfel/mnist_training:latest", 
                            command=["python", "/root/code/fashion_mnist.py"], 
@@ -59,9 +59,10 @@ training = k8s.V1Container(image="ximenesfel/mnist_training:latest",
                            volume_mounts=[volume_mount])
 
 tensorboard = k8s.V1Container(image="ximenesfel/mnist_tensorboard:latest", 
-                              command=["tensorboard",  "--logdir",  "/root/tensorboard", "--bind_all"], 
+                              command=["tensorboard",  "--host 0.0.0.0", "--logdir",  "/root/tensorboard"], 
                               name="tensorboard",
                               tty=True,
+                              ports=ports,
                               volume_mounts=[volume_mount])
 
 pod_spec = k8s.V1PodSpec(containers=[training, tensorboard],
