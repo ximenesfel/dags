@@ -1,8 +1,9 @@
 from datetime import timedelta
 from airflow import DAG
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
-from airflow.operators.bash_operator import BashOperator
-from airflow.operators.dummy_operator import DummyOperator
+from airflow.operators.python_operator import PythonOperator
+from airflow.models import DagRun
+from airflow.utils.state import DagRunState, State
 from airflow.utils.dates import days_ago
 from kubernetes.client import models as k8s
 
@@ -83,9 +84,14 @@ training = KubernetesPodOperator(
     dag=dag
 )
 
-finish = BashOperator(
+def sucess_tensorboard_task():
+    dag_id = 'tensorboard'
+    dag_run = DagRun.find(dag_id=dag_id)
+    dag_run.set_state = State.SUCCESS
+
+finish = PythonOperator(
     task_id='finish',
-    bash_command='echo 1',
+    python_callable=sucess_tensorboard_task,
     trigger_rule="one_success",
     dag=dag
 )
