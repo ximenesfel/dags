@@ -46,9 +46,9 @@ volume = k8s.V1Volume(
     persistent_volume_claim=k8s.V1PersistentVolumeClaimVolumeSource(claim_name='tensorboard-claim'),
 )
 
-exec_action = k8s.V1ExecAction(command=)
+#exec_action = k8s.V1ExecAction(command=)
 
-handler = k8s.V1Handler(_exec=)
+#handler = k8s.V1Handler(_exec=)
 
 lifecycle = k8s.V1Lifecycle(pre_stop=handler)
 
