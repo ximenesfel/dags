@@ -46,6 +46,17 @@ volume = k8s.V1Volume(
     persistent_volume_claim=k8s.V1PersistentVolumeClaimVolumeSource(claim_name='tensorboard-claim'),
 )
 
+training_container = k8s.V1Container(image="ximenesfel/mnist_training:latest", 
+                                     command=["python", "/root/code/fashion_mnist.py"], 
+                                     name="training",
+                                     tty=True,
+                                     volume_mounts=[volume_mount])
+
+pod_spec = k8s.V1PodSpec(containers=[training_container],
+                         volumes=[volume])
+
+pod = k8s.V1Pod(spec=pod_spec)
+
 ports = k8s.V1ContainerPort(container_port=6006)
 
 start = BashOperator(
@@ -54,52 +65,71 @@ start = BashOperator(
     dag=dag
 )
 
-tensorboard = KubernetesPodOperator(
-    namespace='airflow',
-    image="ximenesfel/mnist_tensorboard:latest",
-    cmds=["tensorboard",  "--logdir",  "/root/tensorboard", "--bind_all"],
-    name="tensorboard",
-    in_cluster=True,
-    task_id="tensorboard",
-    volumes=[volume],
-    volume_mounts=[volume_mount],
-    is_delete_operator_pod=True,
-    startup_timeout_seconds=300,
-    ports=[ports],
-    get_logs=True,
-    dag=dag
-)
+# tensorboard = KubernetesPodOperator(
+#     namespace='airflow',
+#     image="ximenesfel/mnist_tensorboard:latest",
+#     cmds=["tensorboard",  "--logdir",  "/root/tensorboard", "--bind_all"],
+#     name="tensorboard",
+#     in_cluster=True,
+#     task_id="tensorboard",
+#     volumes=[volume],
+#     volume_mounts=[volume_mount],
+#     is_delete_operator_pod=True,
+#     startup_timeout_seconds=300,
+#     ports=[ports],
+#     get_logs=True,
+#     dag=dag
+# )
+
+# training = KubernetesPodOperator(
+#     namespace='airflow',
+#     image="ximenesfel/mnist_training:latest",
+#     cmds=["python", "/root/code/fashion_mnist.py"],
+#     name="training",
+#     in_cluster=True,
+#     task_id="training",
+#     is_delete_operator_pod=True,
+#     volumes=[volume],
+#     volume_mounts=[volume_mount],
+#     startup_timeout_seconds=300,
+#     get_logs=True,
+#     dag=dag
+# )
 
 training = KubernetesPodOperator(
     namespace='airflow',
-    image="ximenesfel/mnist_training:latest",
-    cmds=["python", "/root/code/fashion_mnist.py"],
     name="training",
     in_cluster=True,
     task_id="training",
     is_delete_operator_pod=True,
-    volumes=[volume],
-    volume_mounts=[volume_mount],
     startup_timeout_seconds=300,
+    full_pod_spec=pod,
     get_logs=True,
     dag=dag
 )
 
-def sucess_tensorboard_task():
-    dag_id = 'kubernetes_training'
-    dag_runs = DagRun.find(dag_id=dag_id)
-    for dag_run in dag_runs:
-        task = dag_run.get_task_instance("tensorboard")
-        print(task)
-        print(f"Actual task state: {task.state}")
-        task.state = State.SUCCESS
-        print(f"Modified task state: {task.state}")
+# def sucess_tensorboard_task():
+#     dag_id = 'kubernetes_training'
+#     dag_runs = DagRun.find(dag_id=dag_id)
+#     for dag_run in dag_runs:
+#         task = dag_run.get_task_instance("tensorboard")
+#         print(task)
+#         print(f"Actual task state: {task.state}")
+#         task.state = State.SUCCESS
+#         print(f"Modified task state: {task.state}")
 
-finish = PythonOperator(
+# finish = PythonOperator(
+#     task_id='finish',
+#     python_callable=sucess_tensorboard_task,
+#     trigger_rule="one_success",
+#     dag=dag
+# )
+
+finish = BashOperator(
     task_id='finish',
-    python_callable=sucess_tensorboard_task,
-    trigger_rule="one_success",
+    bash_command='echo 1',
     dag=dag
 )
 
-start >> [tensorboard,training] >> finish
+#start >> [tensorboard,training] >> finish
+start >> training >> finish
