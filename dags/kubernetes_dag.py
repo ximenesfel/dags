@@ -48,12 +48,6 @@ volume = k8s.V1Volume(
 
 ports = k8s.V1ContainerPort(container_port=6006)
 
-# exec_action = k8s.V1ExecAction(command=["pkill", "-2", "-f", "tensorboard"])
-
-# handler = k8s.V1Handler(_exec=exec_action)
-
-# lifecycle = k8s.V1Lifecycle(pre_stop=handler)
-
 exec_action = k8s.V1ExecAction(command=["/bin/bash", "-c", "pgrep python"])
 
 probe = k8s.V1Probe(_exec=exec_action)
