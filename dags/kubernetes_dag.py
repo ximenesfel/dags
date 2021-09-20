@@ -48,11 +48,15 @@ volume = k8s.V1Volume(
 
 ports = k8s.V1ContainerPort(container_port=6006)
 
-exec_action = k8s.V1ExecAction(command=["pkill", "-2", "-f", "tensorboard"])
+# exec_action = k8s.V1ExecAction(command=["pkill", "-2", "-f", "tensorboard"])
 
-handler = k8s.V1Handler(_exec=exec_action)
+# handler = k8s.V1Handler(_exec=exec_action)
 
-lifecycle = k8s.V1Lifecycle(pre_stop=handler)
+# lifecycle = k8s.V1Lifecycle(pre_stop=handler)
+
+exec_action = k8s.V1ExecAction(command=["ps", "aux", "|", "grep", "fashion_mnist"])
+
+probe = k8s.V1Probe(_exec=exec_action)
 
 training = k8s.V1Container(image="ximenesfel/mnist_training:latest", 
                            command=["python", "/root/code/fashion_mnist.py"], 
@@ -61,14 +65,16 @@ training = k8s.V1Container(image="ximenesfel/mnist_training:latest",
                            volume_mounts=[volume_mount])
 
 tensorboard = k8s.V1Container(image="ximenesfel/mnist_tensorboard:latest", 
-                              command=["tensorboard",  "--host 0.0.0.0", "--logdir",  "/root/tensorboard", "--bind_all"], 
+                              command=["tensorboard", "--logdir",  "/root/tensorboard", "--bind_all"], 
                               name="tensorboard",
                               tty=True,
+                              liveness_probe=probe,
                               ports=[ports],
                               volume_mounts=[volume_mount])
 
 pod_spec = k8s.V1PodSpec(containers=[training, tensorboard],
                          volumes=[volume],
+                         restart_policy="Never",
                          share_process_namespace=True)
 
 pod = k8s.V1Pod(spec=pod_spec)
