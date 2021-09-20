@@ -89,9 +89,10 @@ def sucess_tensorboard_task():
     dag_id = 'kubernetes_training'
     dag_runs = DagRun.find(dag_id=dag_id)
     for dag_run in dag_runs:
-        print(f"Dag state: {dag_run.state}.")
-        dag_run.state = State.SUCCESS
-        print(f"Modified dag state: {dag_run.state}.")
+        task = dag_run.get_task_instance("tensorboard")
+        print(f"Actual task state: {task.state}")
+        task.state = State.SUCCESS
+        print(f"Modified task state: {task.state}")
 
 finish = PythonOperator(
     task_id='finish',
