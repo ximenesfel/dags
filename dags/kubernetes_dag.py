@@ -49,6 +49,7 @@ ports = k8s.V1ContainerPort(container_port=6006)
 start = BashOperator(
     task_id='start',
     bash_command='echo 1',
+    dag=dag
 )
 
 tensorboard = KubernetesPodOperator(
@@ -85,6 +86,7 @@ training = KubernetesPodOperator(
 finish = BashOperator(
     task_id='finish',
     bash_command='echo 1',
+    dag=dag
 )
 
 start >> [tensorboard,training] >> finished
