@@ -53,7 +53,7 @@ exec_action = k8s.V1ExecAction(command=["/bin/bash", "-c", "pgrep python"])
 probe = k8s.V1Probe(_exec=exec_action)
 
 dag_run = dag.get_active_runs()
-run_id = dag_run[0].run_id
+run_id = dag_run.run_id
 
 
 training = k8s.V1Container(image="ximenesfel/mnist_training:latest", 
