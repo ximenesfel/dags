@@ -46,7 +46,7 @@ volume = k8s.V1Volume(
     persistent_volume_claim=k8s.V1PersistentVolumeClaimVolumeSource(claim_name='tensorboard-claim'),
 )
 
-ports = k8s.V1ContainerPort(container_port=6006)
+ports = k8s.V1ContainerPort(container_port=6006, host_port=6006)
 
 exec_action = k8s.V1ExecAction(command=["/bin/bash", "-c", "pgrep python"])
 
@@ -60,7 +60,7 @@ training = k8s.V1Container(image="ximenesfel/mnist_training:latest",
 
 tensorboard = k8s.V1Container(image="ximenesfel/mnist_tensorboard:latest", 
                             #   command=["tensorboard", "--logdir",  "/root/tensorboard", "--bind_all"],
-                              command=["tensorboard", "--logdir",  "/root/tensorboard", "--host 0.0.0.0"],
+                              command=["tensorboard", "--logdir",  "/root/tensorboard", "--bind_all"],
                               name="tensorboard",
                               tty=True,
                             #   liveness_probe=probe,
