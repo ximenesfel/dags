@@ -54,7 +54,7 @@ probe = k8s.V1Probe(_exec=exec_action)
 
 dag_run = dag.get_active_runs()
 print(dag_run)
-#run_id = dag_run.run_id
+run_id = "20"
 
 
 training = k8s.V1Container(image="ximenesfel/mnist_training:latest", 
