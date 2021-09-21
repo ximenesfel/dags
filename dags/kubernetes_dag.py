@@ -62,7 +62,7 @@ tensorboard = k8s.V1Container(image="ximenesfel/mnist_tensorboard:latest",
                               command=["tensorboard", "--logdir",  "/root/tensorboard", "--bind_all"], 
                               name="tensorboard",
                               tty=True,
-                              liveness_probe=probe,
+                            #   liveness_probe=probe,
                               ports=[ports],
                               volume_mounts=[volume_mount])
 
