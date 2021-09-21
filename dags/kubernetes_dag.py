@@ -53,7 +53,7 @@ exec_action = k8s.V1ExecAction(command=["/bin/bash", "-c", "pgrep python"])
 probe = k8s.V1Probe(_exec=exec_action)
 
 training = k8s.V1Container(image="ximenesfel/mnist_training:latest", 
-                           command=["python", "/root/code/fashion_mnist.py"], 
+                           command=["python", "/root/code/fashion_mnist.py", "-f", "test"], 
                            name="training",
                            tty=True,
                            volume_mounts=[volume_mount])
