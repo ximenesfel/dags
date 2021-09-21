@@ -117,6 +117,7 @@ training = KubernetesPodOperator(
     task_id="training",
     is_delete_operator_pod=True,
     startup_timeout_seconds=300,
+    labels={"app": "tensorboard"}
     full_pod_spec=pod,
     get_logs=True,
     dag=dag
