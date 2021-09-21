@@ -59,15 +59,14 @@ training = k8s.V1Container(image="ximenesfel/mnist_training:latest",
                            volume_mounts=[volume_mount])
 
 tensorboard = k8s.V1Container(image="ximenesfel/mnist_tensorboard:latest", 
-                            #   command=["tensorboard", "--logdir",  "/root/tensorboard", "--bind_all"],
                               command=["tensorboard", "--logdir",  "/root/tensorboard", "--bind_all"],
                               name="tensorboard",
                               tty=True,
-                            #   liveness_probe=probe,
+                              liveness_probe=probe,
                               ports=[ports],
                               volume_mounts=[volume_mount])
 
-pod_spec = k8s.V1PodSpec(containers=[tensorboard],
+pod_spec = k8s.V1PodSpec(containers=[training, tensorboard],
                          volumes=[volume],
                          restart_policy="Never",
                          share_process_namespace=True)
