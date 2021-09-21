@@ -66,7 +66,7 @@ tensorboard = k8s.V1Container(image="ximenesfel/mnist_tensorboard:latest",
                               ports=[ports],
                               volume_mounts=[volume_mount])
 
-pod_spec = k8s.V1PodSpec(containers=[training, tensorboard],
+pod_spec = k8s.V1PodSpec(containers=[tensorboard],
                          volumes=[volume],
                          restart_policy="Never",
                          share_process_namespace=True)
