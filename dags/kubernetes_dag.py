@@ -55,7 +55,7 @@ probe = k8s.V1Probe(_exec=exec_action)
 run_id = '{{run_id}}'
 
 training = k8s.V1Container(image="ximenesfel/mnist_training:latest", 
-                           command=["python", "/root/code/fashion_mnist.py", "-f", f"run_id"], 
+                           command=["python", "/root/code/fashion_mnist.py", "-f", f"{run_id}"], 
                            name="training",
                            tty=True,
                            volume_mounts=[volume_mount])
