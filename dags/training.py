@@ -59,7 +59,6 @@ training = KubernetesPodOperator(
     dag=dag
 )
 
-
 finish = BashOperator(
     task_id='finish',
     bash_command='echo 1',

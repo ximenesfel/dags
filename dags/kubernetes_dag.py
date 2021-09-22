@@ -43,6 +43,8 @@ exec_action = k8s.V1ExecAction(command=["/bin/bash", "-c", "pgrep python"])
 
 probe = k8s.V1Probe(_exec=exec_action)
 
+env_variable = k8s.V1EnvVar(name="run_id", value='{{ run_id }}')
+
 training = k8s.V1Container(image="ximenesfel/mnist_training:latest", 
                            command=["python", "/root/code/fashion_mnist.py", "-f"],
                            args=['{{ run_id }}'],
@@ -52,7 +54,8 @@ training = k8s.V1Container(image="ximenesfel/mnist_training:latest",
 
 tensorboard = k8s.V1Container(image="ximenesfel/mnist_tensorboard:latest", 
                               command=["tensorboard", "--bind_all", "--logdir"],
-                              args= ['/root/tensorboard/{{ run_id }}'],
+                              args= ["/root/tensorboard/$(run_id)"],
+                              env_vars= env_variable,
                               name="tensorboard",
                               tty=True,
                               liveness_probe=probe,
@@ -71,37 +74,6 @@ start = BashOperator(
     bash_command='echo 1',
     dag=dag
 )
-
-# tensorboard = KubernetesPodOperator(
-#     namespace='airflow',
-#     image="ximenesfel/mnist_tensorboard:latest",
-#     cmds=["tensorboard",  "--logdir",  "/root/tensorboard", "--bind_all"],
-#     name="tensorboard",
-#     in_cluster=True,
-#     task_id="tensorboard",
-#     volumes=[volume],
-#     volume_mounts=[volume_mount],
-#     is_delete_operator_pod=True,
-#     startup_timeout_seconds=300,
-#     ports=[ports],
-#     get_logs=True,
-#     dag=dag
-# )
-
-# training = KubernetesPodOperator(
-#     namespace='airflow',
-#     image="ximenesfel/mnist_training:latest",
-#     cmds=["python", "/root/code/fashion_mnist.py"],
-#     name="training",
-#     in_cluster=True,
-#     task_id="training",
-#     is_delete_operator_pod=True,
-#     volumes=[volume],
-#     volume_mounts=[volume_mount],
-#     startup_timeout_seconds=300,
-#     get_logs=True,
-#     dag=dag
-# )
 
 training = KubernetesPodOperator(
     namespace='airflow',
@@ -122,5 +94,4 @@ finish = BashOperator(
     dag=dag
 )
 
-#start >> [tensorboard,training] >> finish
 start >> training >> finish
