@@ -51,7 +51,7 @@ training = k8s.V1Container(image="ximenesfel/mnist_training:latest",
                            volume_mounts=[volume_mount])
 
 tensorboard = k8s.V1Container(image="ximenesfel/mnist_tensorboard:latest", 
-                              command=["tensorboard", "--bind_all", "--logdir", "/root/tensorboard/"],
+                              command=["tensorboard", "--bind_all", "--logdir", "/root/tensorboard/" + "manual__2021-09-22T19:06:23.716583+00:00"],
                               #args=["/root/tensorboard/" + "{{ run_id }}"],
                               name="tensorboard",
                               tty=True,
