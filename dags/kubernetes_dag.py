@@ -59,7 +59,8 @@ probe = k8s.V1Probe(_exec=exec_action)
 
 
 training = k8s.V1Container(image="ximenesfel/mnist_training:latest", 
-                           command=["python", "/root/code/fashion_mnist.py", "-f", "{{ run_id }}"], 
+                           command=["python", "/root/code/fashion_mnist.py", "-f"],
+                           args=['{{ run_id }}'],
                            name="training",
                            tty=True,
                            volume_mounts=[volume_mount])
@@ -123,7 +124,7 @@ training = KubernetesPodOperator(
     task_id="training",
     is_delete_operator_pod=True,
     startup_timeout_seconds=300,
-    labels={"app": "tensorboard"},
+    arguments=['{{ run_id }}'],
     full_pod_spec=pod,
     get_logs=True,
     dag=dag
