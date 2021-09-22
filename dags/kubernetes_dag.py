@@ -52,7 +52,7 @@ training = k8s.V1Container(image="ximenesfel/mnist_training:latest",
 
 tensorboard = k8s.V1Container(image="ximenesfel/mnist_tensorboard:latest", 
                               command=["tensorboard", "--logdir"],
-                              args= ["/root/tensorboard/'{{ run_id }}'", "--bind_all"],
+                              args= ["/root/tensorboard/"'{{ run_id }}', "--bind_all"],
                               name="tensorboard",
                               tty=True,
                               liveness_probe=probe,
