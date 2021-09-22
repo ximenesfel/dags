@@ -52,13 +52,13 @@ exec_action = k8s.V1ExecAction(command=["/bin/bash", "-c", "pgrep python"])
 
 probe = k8s.V1Probe(_exec=exec_action)
 
-dag_run = dag.get_active_runs()
-print(dag_run)
-run_id = "20"
+# dag_run = dag.get_active_runs()
+# print(dag_run)
+# run_id = "20"
 
 
 training = k8s.V1Container(image="ximenesfel/mnist_training:latest", 
-                           command=["python", "/root/code/fashion_mnist.py", "-f", f"{run_id}"], 
+                           command=["python", "/root/code/fashion_mnist.py", "-f", "{{run_id}}"], 
                            name="training",
                            tty=True,
                            volume_mounts=[volume_mount])
