@@ -43,7 +43,7 @@ exec_action = k8s.V1ExecAction(command=["/bin/bash", "-c", "pgrep python"])
 
 probe = k8s.V1Probe(_exec=exec_action)
 
-value = '{{ run_id }}'
+value = ['{{ run_id }}']
 
 training = k8s.V1Container(image="ximenesfel/mnist_training:latest", 
                            command=["python", "/root/code/fashion_mnist.py", "-f"],
@@ -54,7 +54,7 @@ training = k8s.V1Container(image="ximenesfel/mnist_training:latest",
 
 tensorboard = k8s.V1Container(image="ximenesfel/mnist_tensorboard:latest", 
                               command=["tensorboard", "--bind_all", "--logdir"],
-                              args= [f"/root/tensorboard/{value}"],
+                              args= [f"/root/tensorboard/{value[0]}"],
                               name="tensorboard",
                               tty=True,
                               liveness_probe=probe,
