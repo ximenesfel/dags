@@ -43,6 +43,8 @@ exec_action = k8s.V1ExecAction(command=["/bin/bash", "-c", "pgrep python"])
 
 probe = k8s.V1Probe(_exec=exec_action)
 
+env_variable = k8s.V1EnvVar(name="run_id", value='{{ run_id }}')
+
 training = k8s.V1Container(image="ximenesfel/mnist_training:latest", 
                            command=["python", "/root/code/fashion_mnist.py", "-f"],
                            args=['{{ run_id }}'],
@@ -51,11 +53,11 @@ training = k8s.V1Container(image="ximenesfel/mnist_training:latest",
                            volume_mounts=[volume_mount])
 
 tensorboard = k8s.V1Container(image="ximenesfel/mnist_tensorboard:latest", 
-                              command=["tensorboard", "--bind_all", "--logdir", "/root/tensorboard/" + 
-                                       '{{ run_id }}'],
+                              command=["tensorboard", "--bind_all", "--logdir", "/root/tensorboard/$run_id"],
                               #args=["/root/tensorboard/" + "{{ run_id }}"],
                               name="tensorboard",
                               tty=True,
+                              env=[env_variable],
                               liveness_probe=probe,
                               ports=[ports],
                               volume_mounts=[volume_mount])
@@ -80,6 +82,7 @@ training = KubernetesPodOperator(
     task_id="training",
     is_delete_operator_pod=True,
     startup_timeout_seconds=300,
+    env_vars=env_variable,
     arguments=['{{ run_id }}'],
     full_pod_spec=pod,
     get_logs=True,
