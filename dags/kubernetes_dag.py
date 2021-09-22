@@ -29,15 +29,6 @@ dag = DAG(
     tags=['training'],
 )
 
-# Generate 2 tasks
-# tasks = ["task{}".format(i) for i in range(1, 2)]
-# example_dag_complete_node = DummyOperator(task_id="example_dag_complete", dag=dag)
-
-# org_dags = []
-# for task in tasks:
-
-#     bash_command = 'echo HELLO'
-
 volume_mount = k8s.V1VolumeMount(
     name='tensorboard', mount_path='/root/tensorboard', sub_path=None)
 
@@ -52,12 +43,6 @@ exec_action = k8s.V1ExecAction(command=["/bin/bash", "-c", "pgrep python"])
 
 probe = k8s.V1Probe(_exec=exec_action)
 
-# dag_run = dag.get_active_runs()
-# print(dag_run)
-# run_id = "20"
-
-
-
 training = k8s.V1Container(image="ximenesfel/mnist_training:latest", 
                            command=["python", "/root/code/fashion_mnist.py", "-f"],
                            args=['{{ run_id }}'],
@@ -66,7 +51,8 @@ training = k8s.V1Container(image="ximenesfel/mnist_training:latest",
                            volume_mounts=[volume_mount])
 
 tensorboard = k8s.V1Container(image="ximenesfel/mnist_tensorboard:latest", 
-                              command=["tensorboard", "--logdir",  "/root/tensorboard", "--bind_all"],
+                              command=["tensorboard", "--logdir"],
+                              args= ["/root/tensorboard/'{{ run_id }}'", "--bind_all"],
                               name="tensorboard",
                               tty=True,
                               liveness_probe=probe,
@@ -129,23 +115,6 @@ training = KubernetesPodOperator(
     get_logs=True,
     dag=dag
 )
-
-# def sucess_tensorboard_task():
-#     dag_id = 'kubernetes_training'
-#     dag_runs = DagRun.find(dag_id=dag_id)
-#     for dag_run in dag_runs:
-#         task = dag_run.get_task_instance("tensorboard")
-#         print(task)
-#         print(f"Actual task state: {task.state}")
-#         task.state = State.SUCCESS
-#         print(f"Modified task state: {task.state}")
-
-# finish = PythonOperator(
-#     task_id='finish',
-#     python_callable=sucess_tensorboard_task,
-#     trigger_rule="one_success",
-#     dag=dag
-# )
 
 finish = BashOperator(
     task_id='finish',
