@@ -68,5 +68,4 @@ finish = BashOperator(
     dag=dag
 )
 
-#start >> [tensorboard,training] >> finish
 start >> tensorboard >> finish
