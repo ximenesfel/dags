@@ -47,7 +47,7 @@ start = BashOperator(
 create_bucket = S3CreateBucketOperator(
         task_id='s3_bucket_dag_create',
         bucket_name="testairflowkuberntes",
-        region_name='sa-east-1',
+        region_name='sa-east-1'
 )
 
 training = KubernetesPodOperator(
