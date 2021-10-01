@@ -44,12 +44,12 @@ start = BashOperator(
     dag=dag
 )
 
-create_bucket = S3CreateBucketOperator(
-        task_id='s3_bucket_dag_create',
-        aws_conn_id="aws",
-        bucket_name="testairflowkuberntes",
-        region_name='sa-east-1',
-)
+# create_bucket = S3CreateBucketOperator(
+#         task_id='s3_bucket_dag_create',
+#         aws_conn_id="aws",
+#         bucket_name="testairflowkuberntes",
+#         region_name='sa-east-1',
+# )
 
 training = KubernetesPodOperator(
     namespace='airflow',
@@ -73,6 +73,6 @@ finish = BashOperator(
     dag=dag
 )
 
-#start >> training >> finish
+start >> training >> finish
 
-start >> S3CreateBucketOperator >> finish
+# start >> S3CreateBucketOperator >> finish
