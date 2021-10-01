@@ -50,6 +50,7 @@ with DAG(
     # [START howto_operator_s3_bucket]
     create_bucket = S3CreateBucketOperator(
         task_id='s3_bucket_dag_create',
+        aws_conn_id="aws",
         region_name='us-east-1',
     )
 
@@ -58,6 +59,7 @@ with DAG(
 
     delete_bucket = S3DeleteBucketOperator(
         task_id='s3_bucket_dag_delete',
+        aws_conn_id="aws",
         force_delete=True,
     )
     # [END howto_operator_s3_bucket]
