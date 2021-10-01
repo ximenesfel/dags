@@ -51,11 +51,12 @@ dag = DAG(
 def download():
     s3hook = S3Hook(aws_conn_id="aws")
     # Download S3 dataset into memory
-    mnist_buffer = io.BytesIO()
-    mnist_obj = s3hook.get_key(bucket_name="testairflowkuberntes",
-                               key="known_hosts",
-                              )
-    mnist_obj.download_fileobj(mnist_buffer)
+    # mnist_buffer = io.BytesIO()
+    # mnist_obj = s3hook.get_key(bucket_name="testairflowkuberntes",
+    #                            key="known_hosts",)
+    # mnist_obj.download_fileobj(mnist_buffer)
+
+    s3hook.download_file(key="known_hosts", bucket_name="testairflowkuberntes", local_path="/tmp")
 
 task = PythonOperator(
     python_callable=download,
