@@ -47,7 +47,7 @@ dag = DAG(
 )
 
 
-def downlaod():
+def download():
     s3 = S3Hook(aws_conn_id="aws")
     s3.download_file(key="./known_hosts",
                     bucket_name="testairflowkuberntes")
