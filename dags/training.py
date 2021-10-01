@@ -46,7 +46,7 @@ start = BashOperator(
 
 create_bucket = S3CreateBucketOperator(
         task_id='s3_bucket_dag_create',
-        aws_conn_id=aws,
+        aws_conn_id="aws",
         bucket_name="testairflowkuberntes",
         region_name='sa-east-1',
 )
