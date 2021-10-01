@@ -23,6 +23,17 @@ from airflow.utils.dates import days_ago
 
 BUCKET_NAME = os.environ.get('BUCKET_NAME', 'testairflowkuberntes')
 
+default_args = {
+    'owner': 'Airflow',
+    'depends_on_past': False,
+    'start_date': days_ago(0),
+    'catchup': False,
+    'email': ['airflow@example.com'],
+    'email_on_failure': False,
+    'email_on_retry': False,
+    'retries': 0,
+    'retry_delay': timedelta(minutes=5),
+}
 
 dag = DAG(
     's3_downlaod_file',
