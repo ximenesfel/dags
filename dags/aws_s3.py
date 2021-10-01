@@ -15,6 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 import os
+import io
 
 from airflow.decorators import task
 from airflow.models.dag import DAG
@@ -48,9 +49,13 @@ dag = DAG(
 
 
 def download():
-    s3 = S3Hook(aws_conn_id="aws")
-    s3.download_file(key="s3://",
-                    bucket_name="testairflowkuberntes")
+    s3hook = S3Hook(aws_conn_id="aws")
+    # Download S3 dataset into memory
+    mnist_buffer = io.BytesIO()
+    mnist_obj = s3hook.get_key(bucket_name="testairflowkuberntes",
+                               key="known_hosts",
+                              )
+    mnist_obj.download_fileobj(mnist_buffer)
 
 task = PythonOperator(
     python_callable=download,
