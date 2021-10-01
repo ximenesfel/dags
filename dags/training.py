@@ -1,6 +1,7 @@
 from datetime import timedelta
 from airflow import DAG
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
+from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators.bash_operator import BashOperator
 from airflow.models import DagRun
@@ -43,6 +44,13 @@ start = BashOperator(
     dag=dag
 )
 
+create_bucket = S3CreateBucketOperator(
+        task_id='s3_bucket_dag_create',
+        aws_conn_id=aws,
+        bucket_name="testairflowkuberntes",
+        region_name='sa-east-1',
+)
+
 training = KubernetesPodOperator(
     namespace='airflow',
     image="ximenesfel/mnist_training:latest",
@@ -65,4 +73,6 @@ finish = BashOperator(
     dag=dag
 )
 
-start >> training >> finish
+#start >> training >> finish
+
+start >> S3CreateBucketOperator >> finish
