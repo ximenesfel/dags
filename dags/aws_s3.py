@@ -16,6 +16,7 @@
 # under the License.
 import os
 import io
+import boto3
 
 from airflow.decorators import task
 from airflow.models.dag import DAG
