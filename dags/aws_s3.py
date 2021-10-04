@@ -37,9 +37,9 @@ volume = k8s.V1Volume(
     persistent_volume_claim=k8s.V1PersistentVolumeClaimVolumeSource(claim_name='dataset-claim'),
 )
 
-AWS_ACCESS_KEY_ID= k8s.V1EnvVar(name="AWS_ACCESS_KEY_ID", value="AKIATE6LLBJJEQ7X5PSF")
+AWS_ACCESS_KEY_ID= k8s.V1EnvVar(name="AWS_ACCESS_KEY_ID", value="")
 AWS_DEFAULT_REGION = k8s.V1EnvVar(name="AWS_DEFAULT_REGION", value="us-east-1")
-AWS_SECRET_ACCESS_KEY = k8s.V1EnvVar(name="AWS_SECRET_ACCESS_KEY", value="7yTwxmTMv/l1Zn4F7PEpkYwI9uOTJRPY+CrIGL5g")
+AWS_SECRET_ACCESS_KEY = k8s.V1EnvVar(name="AWS_SECRET_ACCESS_KEY", value="")
 
 start = BashOperator(
     task_id='start',
