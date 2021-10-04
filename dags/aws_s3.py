@@ -21,7 +21,7 @@ default_args = {
 }
 
 dag = DAG(
-    's3_download_file',
+    's3_download_dataset',
     default_args=default_args,
     schedule_interval=None,
     max_active_runs=1,
