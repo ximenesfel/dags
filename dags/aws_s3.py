@@ -51,13 +51,10 @@ dag = DAG(
 
 
 def download():
-    hook = S3Hook(aws_conn_id="aws")
-    source_s3_key_object = hook.get_key(key="known_hosts", bucket_name="testairflowkuberntes")
-    with NamedTemporaryFile("wb", delete=False) as f:
-        hook.download_fileobj(Fileobj=f)
-        f.flush()
-    #s3hook = S3Hook(aws_conn_id="aws")
-    #s3hook.download_file(key="known_hosts", bucket_name="testairflowkuberntes", local_path="/tmp/dataset")
+ 
+    s3hook = S3Hook(aws_conn_id="aws")
+    value = s3hook.download_file(key="known_hosts", bucket_name="testairflowkuberntes", local_path="/tmp/dataset")
+    print(value)
 
 task = PythonOperator(
     python_callable=download,
