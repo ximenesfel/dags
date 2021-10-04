@@ -23,8 +23,6 @@ from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from airflow.utils.dates import days_ago
 from airflow.operators.python import PythonOperator
 from datetime import timedelta
-from tempfile import NamedTemporaryFile
-
 
 BUCKET_NAME = os.environ.get('BUCKET_NAME', 'testairflowkuberntes')
 
