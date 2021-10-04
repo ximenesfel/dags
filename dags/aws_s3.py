@@ -21,7 +21,7 @@ default_args = {
 }
 
 dag = DAG(
-    'tensorboard',
+    's3_download_file',
     default_args=default_args,
     schedule_interval=None,
     max_active_runs=1,
