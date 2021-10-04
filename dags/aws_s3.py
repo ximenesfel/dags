@@ -56,7 +56,7 @@ def download():
     #                            key="known_hosts",)
     # mnist_obj.download_fileobj(mnist_buffer)
 
-    s3hook.download_file(key="known_hosts", bucket_name="testairflowkuberntes")
+    s3hook.download_file(key="known_hosts", bucket_name="testairflowkuberntes", local_path="/tmp/dataset/known_hosts")
 
 task = PythonOperator(
     python_callable=download,
