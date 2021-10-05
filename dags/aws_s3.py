@@ -1,6 +1,7 @@
 from datetime import timedelta
 from airflow import DAG
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
+from airflow.contrib.kubernetes.secret import Secret
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators.bash_operator import BashOperator
 from airflow.models import DagRun
@@ -37,9 +38,21 @@ volume = k8s.V1Volume(
     persistent_volume_claim=k8s.V1PersistentVolumeClaimVolumeSource(claim_name='dataset-claim'),
 )
 
-AWS_ACCESS_KEY_ID= k8s.V1EnvVar(name="AWS_ACCESS_KEY_ID", value="")
-AWS_DEFAULT_REGION = k8s.V1EnvVar(name="AWS_DEFAULT_REGION", value="us-east-1")
-AWS_SECRET_ACCESS_KEY = k8s.V1EnvVar(name="AWS_SECRET_ACCESS_KEY", value="")
+# AWS_ACCESS_KEY_ID= k8s.V1EnvVar(name="AWS_ACCESS_KEY_ID", value="")
+# AWS_DEFAULT_REGION = k8s.V1EnvVar(name="AWS_DEFAULT_REGION", value="us-east-1")
+# AWS_SECRET_ACCESS_KEY = k8s.V1EnvVar(name="AWS_SECRET_ACCESS_KEY", value="")
+
+AWS_ACCESS_KEY_ID = Secret(
+   deploy_type="env", deploy_target="AWS_ACCESS_KEY_ID", secret="aws", key="AWS_ACCESS_KEY_ID"
+)
+
+AWS_DEFAULT_REGION = Secret(
+   deploy_type="env", deploy_target="AWS_DEFAULT_REGION", secret="aws", key="AWS_DEFAULT_REGION"
+)
+
+AWS_SECRET_ACCESS_KEY = Secret(
+   deploy_type="env", deploy_target="AWS_SECRET_ACCESS_KEY", secret="aws", key="AWS_SECRET_ACCESS_KEY"
+)
 
 start = BashOperator(
     task_id='start',
@@ -56,7 +69,8 @@ download_dataset = KubernetesPodOperator(
     in_cluster=True,
     task_id="dataset",
     volumes=[volume],
-    env_vars=[AWS_ACCESS_KEY_ID, AWS_DEFAULT_REGION, AWS_SECRET_ACCESS_KEY],
+    secrets=[AWS_ACCESS_KEY_ID, AWS_DEFAULT_REGION, AWS_SECRET_ACCESS_KEY],
+    # env_vars=[AWS_ACCESS_KEY_ID, AWS_DEFAULT_REGION, AWS_SECRET_ACCESS_KEY],
     volume_mounts=[volume_mount],
     is_delete_operator_pod=True,
     startup_timeout_seconds=300,
