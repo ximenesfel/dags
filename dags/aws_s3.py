@@ -38,10 +38,6 @@ volume = k8s.V1Volume(
     persistent_volume_claim=k8s.V1PersistentVolumeClaimVolumeSource(claim_name='dataset-claim'),
 )
 
-# AWS_ACCESS_KEY_ID= k8s.V1EnvVar(name="AWS_ACCESS_KEY_ID", value="")
-# AWS_DEFAULT_REGION = k8s.V1EnvVar(name="AWS_DEFAULT_REGION", value="us-east-1")
-# AWS_SECRET_ACCESS_KEY = k8s.V1EnvVar(name="AWS_SECRET_ACCESS_KEY", value="")
-
 AWS_ACCESS_KEY_ID = Secret(
    deploy_type="env", deploy_target="AWS_ACCESS_KEY_ID", secret="aws", key="AWS_ACCESS_KEY_ID"
 )
@@ -70,7 +66,6 @@ download_dataset = KubernetesPodOperator(
     task_id="dataset",
     volumes=[volume],
     secrets=[AWS_ACCESS_KEY_ID, AWS_DEFAULT_REGION, AWS_SECRET_ACCESS_KEY],
-    # env_vars=[AWS_ACCESS_KEY_ID, AWS_DEFAULT_REGION, AWS_SECRET_ACCESS_KEY],
     volume_mounts=[volume_mount],
     is_delete_operator_pod=True,
     startup_timeout_seconds=300,
