@@ -69,6 +69,7 @@ download_dataset = KubernetesPodOperator(
     volume_mounts=[volume_mount],
     is_delete_operator_pod=True,
     startup_timeout_seconds=300,
+    do_xcom_push=True,
     get_logs=True,
     dag=dag
 )
