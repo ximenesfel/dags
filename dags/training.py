@@ -104,4 +104,4 @@ finish = BashOperator(
     dag=dag
 )
 
-start >> >> download_dataset >> training >> finish
+start >> download_dataset >> training >> finish
