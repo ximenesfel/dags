@@ -42,11 +42,12 @@ dag = DAG(
 bucket_files_list = GCSListObjectsOperator(
     task_id='bucket_file_list',
     bucket='covid-mlengine',
-    prefix='Data/RTXCovidPneumonia/Test/V6/')
+    prefix='Data/RTXCovidPneumonia/Test/V6/',
+    dag=dag)
 
 print_data = PythonOperator(
     task_id='print_the_context',
     python_callable=print_value,
-)
+    dag=dag)
 
 bucket_files_list >> print_data
