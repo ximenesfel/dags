@@ -40,3 +40,5 @@ bucket_files_list = GCSListObjectsOperator(
     prefix='Data/RTXCovidPneumonia/Test/V6/')
 
 print(bucket_files_list)
+
+bucket_files_list
