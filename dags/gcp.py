@@ -11,6 +11,17 @@ BUCKET = os.environ.get("GCP_GCS_BUCKET", "covid-mlengine")
 PATH_TO_REMOTE_FILE = os.environ.get("GCP_GCS_PATH_TO_UPLOAD_FILE", "Data/RTXCovidPneumonia/Test/V6")
 PATH_TO_LOCAL_FILE = os.environ.get("GCP_GCS_PATH_TO_SAVED_FILE", "/tmp/data/dataset")
 
+default_args = {
+    'owner': 'Airflow',
+    'depends_on_past': False,
+    'start_date': days_ago(0),
+    'catchup': False,
+    'email': ['airflow@example.com'],
+    'email_on_failure': False,
+    'email_on_retry': False,
+    'retries': 0,
+    'retry_delay': timedelta(minutes=5),
+}
 
 dag = DAG(
     'downlaod_file_gcp',
