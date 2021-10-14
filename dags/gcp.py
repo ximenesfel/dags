@@ -3,6 +3,7 @@ import os
 from airflow import models
 from airflow.providers.google.cloud.transfers.gcs_to_local import GCSToLocalFilesystemOperator
 from airflow.utils.dates import days_ago
+from airflow import DAG
 
 PROJECT_ID = os.environ.get("GCP_PROJECT_ID", "tele-covid19")
 BUCKET = os.environ.get("GCP_GCS_BUCKET", "covid-mlengine")

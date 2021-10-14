@@ -7,7 +7,7 @@ from airflow.operators.bash_operator import BashOperator
 from airflow.models import DagRun
 from airflow.utils.state import State
 from airflow.utils.dates import days_ago
-from airflow.contrib.opertors.kubernetes.secret import Secret
+from airflow.contrib.operators.kubernetes.secret import Secret
 from kubernetes.client import models as k8s
 
 default_args = {
