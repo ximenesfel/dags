@@ -5,6 +5,7 @@ from airflow import DAG
 from airflow.utils.dates import days_ago
 from airflow.providers.google.cloud.transfers.gcs_to_local import GCSToLocalFilesystemOperator
 from airflow.providers.google.cloud.operators.gcs import GCSListObjectsOperator
+from airflow.operators.python_operator import PythonOperator
 
 from datetime import timedelta
 
