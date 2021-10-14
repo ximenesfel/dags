@@ -2,7 +2,7 @@ import os
 
 from airflow import models
 from airflow.providers.google.cloud.transfers.gcs_to_local import GCSToLocalFilesystemOperator
-from airflow.contrib.operators.gcs_list_operator import GCSCreateBucketOperator
+from airflow.providers.google.cloud.operators.gcs import GCSListObjectsOperator
 from airflow.utils.dates import days_ago
 from airflow import DAG
 
@@ -34,7 +34,7 @@ dag = DAG(
     concurrency=10,
 )
 
-bucket_files_list = GoogleCloudStorageListOperator(
+bucket_files_list = GCSListObjectsOperator(
     task_id='bucket_file_list',
     bucket='covid-mlengine',
     prefix='Data/RTXCovidPneumonia/Test/V6/')
