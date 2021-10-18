@@ -3,9 +3,10 @@ import os
 from airflow import models
 from airflow import DAG
 from airflow.utils.dates import days_ago
-from airflow.operators.python_operator import PythonOperator
-
+from airflow.kubernetes.secret import Secret
+from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from datetime import timedelta
+from airflow.operators.bash_operator import BashOperator
 
 
 default_args = {
