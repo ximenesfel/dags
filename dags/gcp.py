@@ -58,7 +58,9 @@ start = BashOperator(
 download_dataset = KubernetesPodOperator(
     namespace='airflow',
     image="gcr.io/tele-covid19/download_dataset:latest",
-    cmds = ["python", "/root/code/gcp.py", "-p", "test", "-i"],
+    cmds = ["python", "/root/code/gcp.py", "-p", "{test: gs://covid-mlengine/Data/RTXCovidPneumonia/Test/V6, \
+                                train: gs://covid-mlengine/Data/RTXCovidPneumonia/Train/V6, \
+                                valid: gs://covid-mlengine/Data/RTXCovidPneumonia/Valid/V6}", "-i"],
     arguments=['{{ run_id }}'],
     name="dataset",
     in_cluster=True,
