@@ -3,21 +3,10 @@ import os
 from airflow import models
 from airflow import DAG
 from airflow.utils.dates import days_ago
-from airflow.providers.google.cloud.transfers.gcs_to_local import GCSToLocalFilesystemOperator
-from airflow.providers.google.cloud.operators.gcs import GCSListObjectsOperator
 from airflow.operators.python_operator import PythonOperator
 
 from datetime import timedelta
 
-
-PROJECT_ID = os.environ.get("GCP_PROJECT_ID", "tele-covid19")
-BUCKET = os.environ.get("GCP_GCS_BUCKET", "covid-mlengine")
-
-PATH_TO_REMOTE_FILE = os.environ.get("GCP_GCS_PATH_TO_UPLOAD_FILE", "Data/RTXCovidPneumonia/Test/V6")
-PATH_TO_LOCAL_FILE = os.environ.get("GCP_GCS_PATH_TO_SAVED_FILE", "/tmp/data/dataset")
-
-def print_value(ds, **kwargs):
-    print(bucket_files_list)
 
 default_args = {
     'owner': 'Airflow',
@@ -39,15 +28,54 @@ dag = DAG(
     concurrency=10,
 )
 
-bucket_files_list = GCSListObjectsOperator(
-    task_id='bucket_file_list',
-    bucket='covid-mlengine',
-    prefix='Data/RTXCovidPneumonia/Test/V6/',
-    dag=dag)
+GCP_JSON_PATH = Secret(
+   deploy_type="env", deploy_target="GOOGLE_APPLICATION_CREDENTIALS", secret="GCP", key="GOOGLE_APPLICATION_CREDENTIALS"
+)
 
-print_data = PythonOperator(
-    task_id='print_the_context',
-    python_callable=print_value,
-    dag=dag)
+volume_mount_dataset = k8s.V1VolumeMount(
+    name='dataset', mount_path='/root/dataset', sub_path=None)
 
-bucket_files_list >> print_data
+volume_dataset = k8s.V1Volume(
+    name='dataset',
+    persistent_volume_claim=k8s.V1PersistentVolumeClaimVolumeSource(claim_name='dataset-claim'),
+)
+
+volume_mount_credentials = k8s.V1VolumeMount(
+    name='credentials', mount_path='/root/credentials', sub_path=None)
+
+volume_credentials = k8s.V1Volume(
+    name='credentials',
+    persistent_volume_claim=k8s.V1PersistentVolumeClaimVolumeSource(claim_name='credentials-claim'),
+)
+
+start = BashOperator(
+    task_id='start',
+    bash_command='echo 1',
+    dag=dag
+)
+
+download_dataset = KubernetesPodOperator(
+    namespace='airflow',
+    image="gcr.io/tele-covid19/download_dataset",
+    cmds = ["python", "/root/code/gcp.py", "-p", "{{ dag_run.conf['s3_bucket'] }}", "-i"],
+    arguments=['{{ run_id }}'],
+    name="dataset",
+    in_cluster=True,
+    task_id="dataset",
+    volumes=[volume_mount_dataset, volume_mount_credentials],
+    secrets=[GCP_JSON_PATH],
+    volume_mounts=[volume_mount],
+    is_delete_operator_pod=True,
+    startup_timeout_seconds=300,
+    do_xcom_push=True,
+    get_logs=True,
+    dag=dag
+)
+
+finish = BashOperator(
+    task_id='finish',
+    bash_command='echo 1',
+    dag=dag
+)
+
+start >> download_dataset >> finish
