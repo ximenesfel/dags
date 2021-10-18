@@ -7,7 +7,7 @@ from airflow.kubernetes.secret import Secret
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from datetime import timedelta
 from airflow.operators.bash_operator import BashOperator
-
+from kubernetes.client import models as k8s
 
 default_args = {
     'owner': 'Airflow',
@@ -57,15 +57,16 @@ start = BashOperator(
 
 download_dataset = KubernetesPodOperator(
     namespace='airflow',
-    image="gcr.io/tele-covid19/download_dataset",
+    image="gcr.io/tele-covid19/download_dataset:latest",
     cmds = ["python", "/root/code/gcp.py", "-p", "{{ dag_run.conf['s3_bucket'] }}", "-i"],
     arguments=['{{ run_id }}'],
     name="dataset",
     in_cluster=True,
     task_id="dataset",
-    volumes=[volume_mount_dataset, volume_mount_credentials],
+    volumes=[volume_dataset, volume_credentials],
     secrets=[GCP_JSON_PATH],
-    volume_mounts=[volume_mount],
+    volume_mounts=[volume_mount_dataset, volume_mount_credentials],
+    image_pull_secrets=[k8s.V1LocalObjectReference('gcr')],
     is_delete_operator_pod=True,
     startup_timeout_seconds=300,
     do_xcom_push=True,
