@@ -30,7 +30,7 @@ dag = DAG(
 )
 
 GCP_JSON_PATH = Secret(
-   deploy_type="env", deploy_target="GOOGLE_APPLICATION_CREDENTIALS", secret="GCP", key="GOOGLE_APPLICATION_CREDENTIALS"
+   deploy_type="env", deploy_target="GOOGLE_APPLICATION_CREDENTIALS", secret="gcp", key="GOOGLE_APPLICATION_CREDENTIALS"
 )
 
 volume_mount_dataset = k8s.V1VolumeMount(
