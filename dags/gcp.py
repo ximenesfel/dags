@@ -55,12 +55,14 @@ start = BashOperator(
     dag=dag
 )
 
+download_data = {"test": "{{ dag_run.conf['dataset']['test'] }}",
+                 "train": "{{ dag_run.conf['dataset']['train'] }}",
+                 "valid": "{{ dag_run.conf['dataset']['valid'] }}"}
+
 download_dataset = KubernetesPodOperator(
     namespace='airflow',
     image="gcr.io/tele-covid19/download_dataset:latest",
-    cmds = ["python", "/root/code/gcp.py", "-p", "{test: gs://covid-mlengine/Data/RTXCovidPneumonia/Test/V6, \
-                                train: gs://covid-mlengine/Data/RTXCovidPneumonia/Train/V6, \
-                                valid: gs://covid-mlengine/Data/RTXCovidPneumonia/Valid/V6}", "-i"],
+    cmds = ["python", "/root/code/gcp.py", "-p", download_data, "-i"],
     arguments=['{{ run_id }}'],
     name="dataset",
     in_cluster=True,
